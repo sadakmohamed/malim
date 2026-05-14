@@ -3,34 +3,46 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger);
-lucide.createIcons();
 
 // Theme Toggle Logic
-const themeToggle = document.getElementById('theme-toggle');
-const body = document.body;
-const darkIcon = document.querySelector('.dark-mode-icon');
-const lightIcon = document.querySelector('.light-mode-icon');
+const initTheme = () => {
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
+  const darkIcon = document.querySelector('.dark-mode-icon');
+  const lightIcon = document.querySelector('.light-mode-icon');
 
-const toggleTheme = () => {
-  body.classList.toggle('light-mode');
-  const isLight = body.classList.contains('light-mode');
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
-  
-  if (isLight) {
-    darkIcon.classList.replace('block', 'hidden');
-    lightIcon.classList.replace('hidden', 'block');
+  const updateIcons = (isLight) => {
+    if (isLight) {
+      darkIcon?.classList.add('hidden');
+      darkIcon?.classList.remove('block');
+      lightIcon?.classList.remove('hidden');
+      lightIcon?.classList.add('block');
+    } else {
+      lightIcon?.classList.add('hidden');
+      lightIcon?.classList.remove('block');
+      darkIcon?.classList.remove('hidden');
+      darkIcon?.classList.add('block');
+    }
+  };
+
+  const toggleTheme = () => {
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateIcons(isLight);
+  };
+
+  // Initialize
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    body.classList.add('light-mode');
+    updateIcons(true);
   } else {
-    lightIcon.classList.replace('block', 'hidden');
-    darkIcon.classList.replace('hidden', 'block');
+    updateIcons(false);
   }
+
+  themeToggle?.addEventListener('click', toggleTheme);
 };
-
-// Initialize Theme
-if (localStorage.getItem('theme') === 'light') {
-  toggleTheme();
-}
-
-themeToggle?.addEventListener('click', toggleTheme);
 
 // Custom Cursor Logic
 const cursor = document.getElementById('cursor');
@@ -153,6 +165,8 @@ window.addEventListener('scroll', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  initTheme();
   revealOnScroll();
   runCounters();
 });
